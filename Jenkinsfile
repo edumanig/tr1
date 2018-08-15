@@ -6,6 +6,7 @@ pipeline {
         stage('tr-build_aviatrix') {
           steps {
             build 'tr-build_aviatrix'
+            addHtmlBadge 'Terraform Regression 3.4'
           }
         }
         stage('tr-account') {
@@ -16,8 +17,17 @@ pipeline {
       }
     }
     stage('Gateway') {
-      steps {
-        build 'tr-gateway'
+      parallel {
+        stage('tr-gateway') {
+          steps {
+            build 'tr-gateway'
+          }
+        }
+        stage('tr-gateway_vpn') {
+          steps {
+            build 'tr-gateway_vpn'
+          }
+        }
       }
     }
     stage('Report') {
