@@ -1,11 +1,6 @@
 pipeline {
   agent any
   stages {
-    stage('Build') {
-      steps {
-        build 'tr_account'
-      }
-    }
     stage('Test') {
       steps {
         sh '''cd /home/ubuntu/automation_test_scripts/Terraform_Scripts/gateway_vpn_ldap_duo
