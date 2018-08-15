@@ -3,16 +3,21 @@ pipeline {
   stages {
     stage('Build') {
       parallel {
-        stage('Build') {
+        stage('tr-account') {
           steps {
             build 'tr-account'
           }
         }
-        stage('error') {
+        stage('tr-gateway') {
           steps {
             build 'tr-gateway'
           }
         }
+      }
+    }
+    stage('') {
+      steps {
+        build 'tr-build_aviatrix'
       }
     }
   }
