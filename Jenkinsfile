@@ -8,7 +8,7 @@ pipeline {
             build 'tr-account'
           }
         }
-        stage('') {
+        stage('error') {
           steps {
             build 'tr-gateway'
           }
