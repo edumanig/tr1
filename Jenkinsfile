@@ -52,8 +52,17 @@ pipeline {
       }
     }
     stage('Report') {
-      steps {
-        addShortText 'Done Terraform Regression'
+      parallel {
+        stage('Report') {
+          steps {
+            addShortText 'Done Terraform Regression'
+          }
+        }
+        stage('send email') {
+          steps {
+            mail(subject: 'Terraform Pipeline', body: 'Aviatrix Gateway Creation', to: 'edsel@aviatrix.com', from: 'localhost@aviatrix.com')
+          }
+        }
       }
     }
   }
