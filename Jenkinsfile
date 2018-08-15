@@ -9,23 +9,44 @@ pipeline {
             addHtmlBadge 'Terraform Regression 3.4'
           }
         }
-        stage('tr-account') {
+        stage('pylint-check') {
           steps {
-            build 'tr-account'
+            build 'pylint-check'
           }
         }
       }
     }
     stage('Gateway') {
       parallel {
-        stage('tr-gateway') {
+        stage('tr-account') {
           steps {
-            build 'tr-gateway'
+            build 'tr-account'
+            build 'tr-gateway_vpn'
           }
         }
         stage('tr-gateway_vpn') {
           steps {
             build 'tr-gateway_vpn'
+          }
+        }
+        stage('tr-gateway') {
+          steps {
+            build 'tr-gateway'
+          }
+        }
+        stage('tr-gateway-nat') {
+          steps {
+            build 'tr-gateway-nat'
+          }
+        }
+        stage('tr-gateway-vpn-nat') {
+          steps {
+            build 'tr-gateway-vpn-nat'
+          }
+        }
+        stage('tr-vpn-ldap-duo') {
+          steps {
+            build 'tr-gateway-ldap-duo'
           }
         }
       }
