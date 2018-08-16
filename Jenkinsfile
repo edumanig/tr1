@@ -70,10 +70,5 @@ pipeline {
         }
       }
     }
-    stage('Results') {
-      steps {
-        junit 'tr1-results'
-      }
-    }
   }
 }
