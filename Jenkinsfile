@@ -63,6 +63,16 @@ pipeline {
             mail(subject: 'Terraform Pipeline', body: 'Aviatrix Gateway Creation', to: 'edsel@aviatrix.com', from: 'localhost@aviatrix.com')
           }
         }
+        stage('tr1-artifacts') {
+          steps {
+            archiveArtifacts 'tr1-artifacts'
+          }
+        }
+      }
+    }
+    stage('Results') {
+      steps {
+        junit 'tr1-results'
       }
     }
   }
