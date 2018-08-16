@@ -5,8 +5,8 @@ pipeline {
       parallel {
         stage('tr-build_aviatrix') {
           steps {
-            build 'tr-build_aviatrix'
             addHtmlBadge 'Terraform Regression 3.4'
+            build(propagate: true, job: 'tr-build_aviatrix', quietPeriod: 1, wait: true)
           }
         }
         stage('pylint-check') {
@@ -20,33 +20,33 @@ pipeline {
       parallel {
         stage('tr-account') {
           steps {
-            build 'tr-account'
+            build(job: 'tr-account', propagate: true, wait: true)
             build 'tr-gateway_vpn'
           }
         }
         stage('tr-gateway_vpn') {
           steps {
-            build 'tr-gateway_vpn'
+            build(job: 'tr-gateway_vpn', propagate: true, wait: true)
           }
         }
         stage('tr-gateway') {
           steps {
-            build 'tr-gateway'
+            build(job: 'tr-gateway', propagate: true, wait: true)
           }
         }
         stage('tr-gateway-nat') {
           steps {
-            build 'tr-gateway-nat'
+            build(job: 'tr-gateway-nat', propagate: true, wait: true)
           }
         }
         stage('tr-gateway-vpn-nat') {
           steps {
-            build 'tr-gateway-vpn-nat'
+            build(job: 'tr-gateway-vpn-nat', propagate: true, wait: true)
           }
         }
         stage('tr-vpn-ldap-duo') {
           steps {
-            build 'tr-gateway-ldap-duo'
+            build(job: 'tr-gateway-ldap-duo', propagate: true, wait: true)
           }
         }
       }
