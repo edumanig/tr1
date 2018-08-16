@@ -16,7 +16,7 @@ pipeline {
         }
         stage('tr-upgrade') {
           steps {
-            build(job: 'tr-upgrade', propagate: true, wait: true)
+            build(job: 'upgrade_only', propagate: true, wait: true)
           }
         }
       }
