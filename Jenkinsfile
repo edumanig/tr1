@@ -21,53 +21,49 @@ pipeline {
         }
       }
     }
-    stage('Gateway') {
+    stage('Test1') {
       parallel {
+        stage('Gateway Test') {
+          steps {
+            sleep 5
+          }
+        }
         stage('tr-account') {
           steps {
-            build(job: 'tr-account', propagate: true, wait: true, quietPeriod: 20)
-            build 'tr-gateway_vpn'
+            build(job: 'tr-account', propagate: true, wait: true)
           }
         }
-        stage('tr-gateway_vpn') {
+        stage('Gateway') {
           steps {
-            build(job: 'tr-gateway_vpn', propagate: true, wait: true, quietPeriod: 20)
+            sleep 10
+            build(job: 'tr-gateway', propagate: true, wait: true)
+            sleep 20
+            build(job: 'tr-gateway-nat', propagate: true, wait: true)
           }
         }
-        stage('tr-gateway') {
+      }
+    }
+    stage('Test2') {
+      parallel {
+        stage('VPN Test') {
           steps {
-            build(job: 'tr-gateway', propagate: true, wait: true, quietPeriod: 20)
+            addShortText 'VPN Gateways'
           }
         }
-        stage('tr-gateway-nat') {
+        stage('Gateway VPN') {
           steps {
-            build(job: 'tr-gateway-nat', propagate: true, wait: true, quietPeriod: 20)
-          }
-        }
-        stage('tr-gateway-vpn-nat') {
-          steps {
-            build(job: 'tr-gateway-vpn-nat', propagate: true, wait: true, quietPeriod: 20)
-          }
-        }
-        stage('tr-vpn-ldap-duo') {
-          steps {
-            build(job: 'tr-gateway-ldap-duo', propagate: true, wait: true, quietPeriod: 20)
+            build(job: 'tr-gateway_vpn', propagate: true, wait: true)
+            sleep 20
+            build(job: 'tr-gateway-vpn-nat', propagate: true, wait: true)
+            sleep 20
+            build(job: 'tr-gateway-ldap-duo', propagate: true, wait: true)
           }
         }
       }
     }
     stage('Report') {
-      parallel {
-        stage('Report') {
-          steps {
-            addShortText 'Done Terraform Regression'
-          }
-        }
-        stage('send email') {
-          steps {
-            mail(subject: 'Terraform Pipeline - 100% Passed', body: 'tr-build_aviatrix, pylint-check, tr-upgrade, tr-account, tr-gateway_vpn, tr-gateway, tr-gateway-nat, tr-gateway-vpn-nat, tr-vpn-ldap-duo', to: 'edsel@aviatrix.com', from: 'localhost@aviatrix.com')
-          }
-        }
+      steps {
+        emailext(subject: 'Terraform Regression - 100% Passed', body: 'tr-account, tr-gateway, tr-gateway_nat, tr-gateway_vpn, tr-gateway-vpn-nat, tr-gateway-ldap-duo', to: 'edsel@aviatrix.com')
       }
     }
   }
