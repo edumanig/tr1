@@ -62,8 +62,17 @@ pipeline {
       }
     }
     stage('Report') {
-      steps {
-        emailext(subject: 'Terraform Regression - 100% Passed', body: 'tr-account, tr-gateway, tr-gateway_nat, tr-gateway_vpn, tr-gateway-vpn-nat, tr-gateway-ldap-duo', to: 'edsel@aviatrix.com')
+      parallel {
+        stage('Report') {
+          steps {
+            emailext(subject: 'Terraform Regression - UserConnect-3.4.703 -100% Passed', body: 'tr-account, tr-gateway, tr-gateway_nat, tr-gateway_vpn, tr-gateway-vpn-nat, tr-gateway-ldap-duo', to: 'edsel@aviatrix.com')
+          }
+        }
+        stage('slack') {
+          steps {
+            slackSend(message: 'Terraform Regression - UserConnect-3.4.703 -- 100% Passed', failOnError: true, token: 'zjC6JXcuigU1Nq0j3AoLBdci', teamDomain: 'aviatrix', baseUrl: 'https://aviatrix.slack.com/services/hooks/jenkins-ci/', channel: '#sitdown')
+          }
+        }
       }
     }
   }
