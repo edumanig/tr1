@@ -70,7 +70,7 @@ pipeline {
         }
         stage('slack') {
           steps {
-            slackSend(message: 'Terraform Regression - UserConnect-3.4.703 -- 100% Passed', failOnError: true, token: 'zjC6JXcuigU1Nq0j3AoLBdci', teamDomain: 'aviatrix', baseUrl: 'https://aviatrix.slack.com/services/hooks/jenkins-ci/', channel: '#sitdown')
+            slackSend(message: 'Terraform Regression - $BUILD_DISPLAY_NAME -- 100% Passed', failOnError: true, token: 'zjC6JXcuigU1Nq0j3AoLBdci', teamDomain: 'aviatrix', baseUrl: 'https://aviatrix.slack.com/services/hooks/jenkins-ci/', channel: '#sitdown')
           }
         }
       }
