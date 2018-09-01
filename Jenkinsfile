@@ -1,7 +1,7 @@
 pipeline {
   agent any
   stages {
-    stage('Build') {
+    stage('Stage1') {
       parallel {
         stage('tr-build_aviatrix') {
           steps {
@@ -21,7 +21,7 @@ pipeline {
         }
       }
     }
-    stage('Test1') {
+    stage('Stage2') {
       parallel {
         stage('Gateway Test') {
           steps {
@@ -43,7 +43,7 @@ pipeline {
         }
       }
     }
-    stage('Test2') {
+    stage('Stage3') {
       parallel {
         stage('VPN Test') {
           steps {
@@ -56,21 +56,51 @@ pipeline {
             sleep 20
             build(job: 'tr-gateway-vpn-nat', propagate: true, wait: true)
             sleep 20
-            build(job: 'tr-gateway-ldap-duo', propagate: true, wait: true)
+            build(job: 'tr-gateway-ldap-duo', propagate: true, wait: true, quietPeriod: 10)
           }
         }
+      }
+    }
+    stage('Stage4') {
+      parallel {
+        stage('Site2Cloud Test') {
+          steps {
+            addBadge(icon: 'Site2Cloud', text: 'Site2Cloud Test')
+          }
+        }
+        stage('Site2Cloud') {
+          steps {
+            build(job: 'tr-s2c-vgw', propagate: true, wait: true, quietPeriod: 10)
+          }
+        }
+        stage('Site2CloudHA') {
+          steps {
+            build(job: 'tr-s2cHA-vgw', propagate: true, quietPeriod: 10, wait: true)
+          }
+        }
+      }
+    }
+    stage('Stage5') {
+      steps {
+        addBadge(icon: 'FQDN', text: 'FQDN Test')
+      }
+    }
+    stage('Stage6') {
+      steps {
+        addBadge(icon: 'Access Account Test', text: 'Access Account')
       }
     }
     stage('Report') {
       parallel {
         stage('Report') {
           steps {
-            emailext(subject: 'Terraform Regression - UserConnect-3.4.703 -100% Passed', body: 'tr-account, tr-gateway, tr-gateway_nat, tr-gateway_vpn, tr-gateway-vpn-nat, tr-gateway-ldap-duo', to: 'edsel@aviatrix.com')
+            echo 'Report Results'
+            emailext(subject: '$BUILD_TAG', body: '$BUILD_DISPLAY', to: 'edsel@aviatrix.com', attachLog: true)
           }
         }
         stage('slack') {
           steps {
-            slackSend(message: 'Terraform Regression - $BUILD_DISPLAY_NAME -- 100% Passed', failOnError: true, token: 'zjC6JXcuigU1Nq0j3AoLBdci', teamDomain: 'aviatrix', baseUrl: 'https://aviatrix.slack.com/services/hooks/jenkins-ci/', channel: '#sitdown')
+            slackSend(message: 'Terraform Regression - 100% Passed', baseUrl: ' https://aviatrix.slack.com/services/hooks/jenkins-ci/', token: 'zjC6JXcuigU1Nq0j3AoLBdci', teamDomain: 'aviatrix', channel: '#sitdown')
           }
         }
       }
