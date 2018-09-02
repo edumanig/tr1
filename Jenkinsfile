@@ -56,7 +56,7 @@ pipeline {
             sleep 20
             build(job: 'tr-gateway-vpn-nat', propagate: true, wait: true)
             sleep 20
-            build(job: 'tr-gateway-ldap-duo', propagate: true, wait: true, quietPeriod: 10)
+            build(job: 'tr-gateway-ldap-duo', propagate: true, wait: true, quietPeriod: 60)
           }
         }
       }
@@ -70,7 +70,7 @@ pipeline {
         }
         stage('Site2Cloud') {
           steps {
-            build(job: 'tr-s2c-vgw', propagate: true, wait: true, quietPeriod: 10)
+            build(job: 'tr-s2c-vgw', propagate: true, wait: true, quietPeriod: 60)
           }
         }
         stage('Site2CloudHA') {
