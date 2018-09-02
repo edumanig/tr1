@@ -71,11 +71,8 @@ pipeline {
         stage('Site2Cloud') {
           steps {
             build(job: 'tr-s2c-vgw', propagate: true, wait: true, quietPeriod: 60)
-          }
-        }
-        stage('Site2CloudHA') {
-          steps {
-            build(job: 'tr-s2cHA-vgw', propagate: true, quietPeriod: 10, wait: true)
+            sleep 30
+            build(job: 'tr-s2cHA-vgw', propagate: true, quietPeriod: 20, wait: true)
           }
         }
       }
