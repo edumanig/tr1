@@ -78,8 +78,17 @@ pipeline {
       }
     }
     stage('Stage5') {
-      steps {
-        addBadge(icon: 'FQDN', text: 'FQDN Test')
+      parallel {
+        stage('Stage5') {
+          steps {
+            addBadge(icon: 'FQDN', text: 'FQDN Test')
+          }
+        }
+        stage('aws-peering') {
+          steps {
+            build(job: 'tr-aws-peering ', propagate: true, quietPeriod: 20, wait: true)
+          }
+        }
       }
     }
     stage('Stage6') {
