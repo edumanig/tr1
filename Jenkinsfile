@@ -6,8 +6,9 @@ pipeline {
         stage('tr-build_aviatrix') {
           steps {
             addHtmlBadge 'Terraform Regression 3.4'
-            build(propagate: true, job: 'tr-build_aviatrix', quietPeriod: 1, wait: true)
+            build(propagate: true, job: 'tr-build_aviatrix', quietPeriod: 10, wait: true)
             build(job: 'tr-aws-peering', propagate: true, wait: true, quietPeriod: 10)
+            build(job: 'tr-fqdn3.3', propagate: true, quietPeriod: 20, wait: true)
           }
         }
         stage('pylint-check') {
@@ -92,6 +93,10 @@ pipeline {
         stage('aws-peering') {
           steps {
             build(job: 'tr-aws-peering', propagate: true, quietPeriod: 20, wait: true)
+            sleep 10
+            build(job: 'tr-aws-peering', propagate: true, quietPeriod: 10, wait: true)
+            sleep 10
+            build(job: 'tr-fqdn3.3', propagate: true, quietPeriod: 10, wait: true)
           }
         }
       }
