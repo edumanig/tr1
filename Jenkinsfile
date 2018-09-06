@@ -23,14 +23,18 @@ pipeline {
     }
     stage('Stage2') {
       parallel {
-        stage('Gateway Test') {
+        stage('Account & Gateway Test') {
           steps {
             sleep 5
           }
         }
-        stage('tr-account') {
+        stage('access-account') {
           steps {
             build(job: 'tr-account', propagate: true, wait: true)
+            sleep 10
+            build(job: 'tr-iam-account', propagate: true, wait: true, quietPeriod: 10)
+            sleep 10
+            build(job: 'tr-role-account', propagate: true, quietPeriod: 10, wait: true)
           }
         }
         stage('Gateway') {
