@@ -7,8 +7,6 @@ pipeline {
           steps {
             addHtmlBadge 'Terraform Regression 3.4'
             build(propagate: true, job: 'tr-build_aviatrix', quietPeriod: 10, wait: true)
-            build(job: 'tr-aws-peering', propagate: true, wait: true, quietPeriod: 10)
-            build(job: 'tr-fqdn3.3', propagate: true, quietPeriod: 20, wait: true)
           }
         }
         stage('pylint-check') {
@@ -25,7 +23,7 @@ pipeline {
     }
     stage('Stage2') {
       parallel {
-        stage('Account & Gateway Test') {
+        stage('Account Test') {
           steps {
             sleep 5
           }
@@ -41,11 +39,6 @@ pipeline {
             build(job: 'tr-gateway', propagate: true, quietPeriod: 10, wait: true)
             sleep 10
             build(job: 'tr-gateway-nat', propagate: true, quietPeriod: 10, wait: true)
-          }
-        }
-        stage('Gateway') {
-          steps {
-            sleep 10
           }
         }
       }
@@ -122,12 +115,12 @@ pipeline {
         stage('Report') {
           steps {
             echo 'Report Results'
-            emailext(subject: '$BUILD_TAG', body: '$BUILD_DISPLAY', to: 'edsel@aviatrix.com', attachLog: true)
+            emailext(subject: '$BUILD_TAG - $BUILD_NAME', body: 'Terraform Regression - 100% Passed', to: 'edsel@aviatrix.com', attachLog: true)
           }
         }
         stage('slack') {
           steps {
-            slackSend(message: 'Terraform Regression - 100% Passed', baseUrl: ' https://aviatrix.slack.com/services/hooks/jenkins-ci/', token: 'zjC6JXcuigU1Nq0j3AoLBdci', teamDomain: 'aviatrix', channel: '#sitdown')
+            slackSend(message: 'Terraform Regression - 100% Passed', channel: '#test-terraform-reg', baseUrl: 'https://aviatrix.slack.com/services/hooks/jenkins-ci/', failOnError: true, teamDomain: 'aviatrix', token: 'zjC6JXcuigU1Nq0j3AoLBdci', attachments: 'Upgrade, access-iam-account,access-root-account,gateway, gateway vpn, gw vpn nat, gw vpn ldap-duo,  site2cloud, site2cloudHA, aws-peering, peering-HA')
           }
         }
       }
