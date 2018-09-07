@@ -37,14 +37,15 @@ pipeline {
             build(job: 'tr-iam-account', propagate: true, wait: true, quietPeriod: 10)
             sleep 10
             build(job: 'tr-role-account', propagate: true, quietPeriod: 10, wait: true)
+            sleep 10
+            build(job: 'tr-gateway', propagate: true, quietPeriod: 10, wait: true)
+            sleep 10
+            build(job: 'tr-gateway-nat', propagate: true, quietPeriod: 10, wait: true)
           }
         }
         stage('Gateway') {
           steps {
             sleep 10
-            build(job: 'tr-gateway', propagate: true, wait: true)
-            sleep 20
-            build(job: 'tr-gateway-nat', propagate: true, wait: true)
           }
         }
       }
@@ -97,13 +98,23 @@ pipeline {
             build(job: 'tr-aws-peering', propagate: true, quietPeriod: 10, wait: true)
             sleep 10
             build(job: 'tr-fqdn3.3', propagate: true, quietPeriod: 10, wait: true)
+            sleep 10
           }
         }
       }
     }
     stage('Stage6') {
-      steps {
-        addBadge(icon: 'Access Account Test', text: 'Access Account')
+      parallel {
+        stage('Stage6') {
+          steps {
+            addBadge(icon: 'Access Account Test', text: 'Access Account')
+          }
+        }
+        stage('peering') {
+          steps {
+            build(job: 'tr-peeringHA', propagate: true, quietPeriod: 10, wait: true)
+          }
+        }
       }
     }
     stage('Report') {
