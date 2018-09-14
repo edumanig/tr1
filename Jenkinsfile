@@ -3,42 +3,44 @@ pipeline {
   stages {
     stage('Stage1') {
       parallel {
-        stage('tr-build_aviatrix') {
+        stage('Build, Upgrade, Account') {
           steps {
             addHtmlBadge 'Terraform Regression 3.4'
             build(propagate: true, job: 'tr-build_aviatrix', quietPeriod: 10, wait: true)
-          }
-        }
-        stage('pylint-check') {
-          steps {
-            build 'pylint-check'
+            build(job: 'pylint-check', propagate: true, quietPeriod: 10, wait: true)
           }
         }
         stage('tr-upgrade') {
           steps {
-            build(job: 'upgrade_only', propagate: true, wait: true, quietPeriod: 20)
+            build(job: 'upgrade_only', propagate: true, quietPeriod: 10)
+          }
+        }
+        stage('account') {
+          steps {
+            build(job: 'tr-account', propagate: true, quietPeriod: 10)
+            build(job: 'tr-iam-account', propagate: true, quietPeriod: 10, wait: true)
+            build(job: 'tr-role-account', propagate: true, quietPeriod: 10, wait: true)
           }
         }
       }
     }
     stage('Stage2') {
       parallel {
-        stage('Account Test') {
+        stage('Gateway Test') {
           steps {
             sleep 5
           }
         }
-        stage('access-account') {
+        stage('Gateway NAT') {
           steps {
-            build(job: 'tr-account', propagate: true, wait: true)
-            sleep 10
-            build(job: 'tr-iam-account', propagate: true, wait: true, quietPeriod: 10)
-            sleep 10
-            build(job: 'tr-role-account', propagate: true, quietPeriod: 10, wait: true)
-            sleep 10
             build(job: 'tr-gateway', propagate: true, quietPeriod: 10, wait: true)
             sleep 10
             build(job: 'tr-gateway-nat', propagate: true, quietPeriod: 10, wait: true)
+          }
+        }
+        stage('Gateway AZ HA') {
+          steps {
+            build(job: 'tr-gateway-single-AZ-ha', propagate: true, quietPeriod: 20, wait: true)
           }
         }
       }
