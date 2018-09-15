@@ -122,7 +122,7 @@ pipeline {
         }
         stage('slack') {
           steps {
-            slackSend(message: 'Terraform Regression - 100% Passed', channel: '#test-terraform-reg', baseUrl: 'https://aviatrix.slack.com/services/hooks/jenkins-ci/', failOnError: true, teamDomain: 'aviatrix', token: 'zjC6JXcuigU1Nq0j3AoLBdci', attachments: 'Upgrade, access-iam-account,access-root-account,gateway, gateway vpn, gw vpn nat, gw vpn ldap-duo,  site2cloud, site2cloudHA, aws-peering, peering-HA')
+            slackSend(message: 'Terraform Regression - 100% Passed (Please use aviatrix-ci/Aviatrix123# for access)', channel: '#test-terraform-reg', baseUrl: 'https://aviatrix.slack.com/services/hooks/jenkins-ci/', failOnError: true, teamDomain: 'aviatrix', token: 'zjC6JXcuigU1Nq0j3AoLBdci', attachments: 'Upgrade, access-iam-account,access-root-account,gateway, gateway vpn, gw vpn nat, gw vpn ldap-duo,  site2cloud, site2cloudHA, aws-peering, peering-HA')
           }
         }
       }
