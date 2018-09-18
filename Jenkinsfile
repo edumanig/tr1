@@ -112,19 +112,39 @@ pipeline {
         }
       }
     }
-    stage('Report') {
+    stage('Stage7') {
       parallel {
-        stage('Report') {
+        stage('Firewall') {
           steps {
             echo 'Report Results'
             emailext(subject: '$BUILD_TAG - $BUILD_NAME', body: 'Terraform Regression - 100% Passed', to: 'edsel@aviatrix.com', attachLog: true)
           }
         }
-        stage('slack') {
+        stage('firewall-policy') {
           steps {
-            slackSend(message: 'Terraform Regression - 100% Passed (Please use aviatrix-ci/Aviatrix123# for access)', channel: '#test-terraform-reg', baseUrl: 'https://aviatrix.slack.com/services/hooks/jenkins-ci/', failOnError: true, teamDomain: 'aviatrix', token: 'zjC6JXcuigU1Nq0j3AoLBdci', attachments: 'Upgrade, access-iam-account,access-root-account,gateway, gateway vpn, gw vpn nat, gw vpn ldap-duo,  site2cloud, site2cloudHA, aws-peering, peering-HA')
+            build(job: 'tr-firewall-tag', propagate: true, quietPeriod: 5, wait: true)
           }
         }
+        stage('firewall-tag') {
+          steps {
+            build(job: 'tr-firewall-tag', propagate: true, quietPeriod: 5, wait: true)
+          }
+        }
+        stage('firewall-policy-tag') {
+          steps {
+            build(job: 'tr-firewall-policy-tag', propagate: true, quietPeriod: 5, wait: true)
+          }
+        }
+      }
+    }
+    stage('Email') {
+      steps {
+        emailext(subject: 'Terraform Regression - 100% Passed', body: 'all terraform modules', from: 'noreply@aviatrix.com', to: 'edsel@aviatrix.com')
+      }
+    }
+    stage('Slack') {
+      steps {
+        slackSend(token: 'zjC6JXcuigU1Nq0j3AoLBdci', failOnError: true, teamDomain: 'aviatrix', channel: '#test-terraform-reg', baseUrl: 'https://aviatrix.slack.com/services/hooks/jenkins-ci/', message: 'Terraform Regression - 100% Passed', attachments: 'upgrade, account, gateway, nat, az ha, site2cloud, aws peering, peeringHA, firewall')
       }
     }
   }
