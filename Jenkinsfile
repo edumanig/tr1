@@ -137,14 +137,24 @@ pipeline {
         }
       }
     }
-    stage('Email') {
-      steps {
-        emailext(subject: 'Terraform Regression - 100% Passed', body: 'all terraform modules', from: 'noreply@aviatrix.com', to: 'edsel@aviatrix.com')
+    stage('Stage8') {
+      parallel {
+        stage('FQDN') {
+          steps {
+            addInfoBadge 'Stage8 - FQDN Test'
+          }
+        }
+        stage('tr-fqdn3.4') {
+          steps {
+            build(job: 'tr-fqdn3.4', propagate: true, quietPeriod: 10, wait: true)
+          }
+        }
       }
     }
     stage('Slack') {
       steps {
         slackSend(token: 'zjC6JXcuigU1Nq0j3AoLBdci', failOnError: true, teamDomain: 'aviatrix', channel: '#test-terraform-reg', baseUrl: 'https://aviatrix.slack.com/services/hooks/jenkins-ci/', message: 'Terraform Regression - 100% Passed', attachments: 'upgrade, account, gateway, nat, az ha, site2cloud, aws peering, peeringHA, firewall')
+        emailext(subject: 'Terraform Regression - 100% Passed', body: 'Aviatrix terraform provider module regression', from: 'noreply@aviatrix.com', replyTo: 'edsel@aviatrix.com')
       }
     }
   }
