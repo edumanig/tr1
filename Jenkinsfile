@@ -90,9 +90,7 @@ pipeline {
           steps {
             build(job: 'tr-aws-peering', propagate: true, quietPeriod: 20, wait: true)
             sleep 10
-            build(job: 'tr-aws-peering', propagate: true, quietPeriod: 10, wait: true)
-            sleep 10
-            build(job: 'tr-fqdn3.3', propagate: true, quietPeriod: 10, wait: true)
+            build(job: 'tr-fqdn3.4', propagate: true, quietPeriod: 10, wait: true)
             sleep 10
           }
         }
