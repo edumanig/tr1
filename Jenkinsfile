@@ -59,6 +59,7 @@ pipeline {
             build(job: 'tr-gateway-vpn-nat', propagate: true, wait: true)
             sleep 20
             build(job: 'tr-gateway-ldap-duo', propagate: true, wait: true, quietPeriod: 60)
+            build(job: 'tr-vpn-user-profile', propagate: true, quietPeriod: 20, wait: true)
           }
         }
       }
@@ -106,6 +107,7 @@ pipeline {
         stage('peering') {
           steps {
             build(job: 'tr-peeringHA', propagate: true, quietPeriod: 10, wait: true)
+            build(job: 'tr-transitive-peering', propagate: true, quietPeriod: 20, wait: true)
           }
         }
       }
