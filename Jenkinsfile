@@ -154,7 +154,7 @@ pipeline {
     stage('Slack') {
       steps {
         slackSend(token: 'zjC6JXcuigU1Nq0j3AoLBdci', failOnError: true, teamDomain: 'aviatrix', channel: '#test-terraform-reg', baseUrl: 'https://aviatrix.slack.com/services/hooks/jenkins-ci/', message: 'Terraform Regression - 100% Passed', attachments: 'upgrade, account, gateway, nat, az ha, site2cloud, aws peering, peeringHA, firewall')
-        emailext(subject: 'Terraform Regression - 100% Passed', body: 'Aviatrix terraform provider module regression', from: 'noreply@aviatrix.com', replyTo: 'edsel@aviatrix.com')
+        emailext(subject: 'Terraform Regression - 100% Passed', body: 'Aviatrix terraform provider module regression', from: 'noreply@aviatrix.com', replyTo: 'edsel@aviatrix.com', to: 'dltest@aviatrix.com')
       }
     }
   }
