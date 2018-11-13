@@ -120,11 +120,6 @@ pipeline {
             emailext(subject: '$BUILD_TAG - $BUILD_NAME', body: 'Terraform Regression - 100% Passed', to: 'edsel@aviatrix.com', attachLog: true)
           }
         }
-        stage('firewall-policy') {
-          steps {
-            build(job: 'tr-firewall-tag', propagate: true, quietPeriod: 5, wait: true)
-          }
-        }
         stage('firewall-tag') {
           steps {
             build(job: 'tr-firewall-tag', propagate: true, quietPeriod: 5, wait: true)
@@ -151,10 +146,39 @@ pipeline {
         }
       }
     }
-    stage('Slack') {
+    stage('Stage9') {
+      parallel {
+        stage('parralel gateway') {
+          steps {
+            addInfoBadge 'multiple gateway'
+          }
+        }
+        stage('tr-multiple-gateway') {
+          steps {
+            build(job: 'tr-multiple-gateway', propagate: true, quietPeriod: 10, wait: true)
+            sleep 10
+            build(job: 'tr-transit-parallel-onprem-aws', propagate: true, quietPeriod: 10, wait: true)
+          }
+        }
+      }
+    }
+    stage('email') {
+      parallel {
+        stage('email') {
+          steps {
+            echo 'test email'
+          }
+        }
+        stage('mail') {
+          steps {
+            emailext(subject: '$BUILD_TAG', body: '$BUILD_TAG')
+          }
+        }
+      }
+    }
+    stage('slack') {
       steps {
-        slackSend(token: 'zjC6JXcuigU1Nq0j3AoLBdci', failOnError: true, teamDomain: 'aviatrix', channel: '#test-terraform-reg', baseUrl: 'https://aviatrix.slack.com/services/hooks/jenkins-ci/', message: 'Terraform Regression - 100% Passed', attachments: 'upgrade, account, gateway, nat, az ha, site2cloud, aws peering, peeringHA, firewall')
-        emailext(subject: 'Terraform Regression - 100% Passed', body: 'Aviatrix terraform provider module regression', from: 'noreply@aviatrix.com', replyTo: 'edsel@aviatrix.com', to: 'dltest@aviatrix.com')
+        echo 'test slack'
       }
     }
   }
